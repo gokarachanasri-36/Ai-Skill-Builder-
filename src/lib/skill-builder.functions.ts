@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { generateText, Output } from "ai";
+import { generateObject } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
 
@@ -69,13 +69,13 @@ Requirements:
 
 Return ONLY structured JSON matching the schema.`;
 
-    const { experimental_output } = await generateText({
+    const { object } = await generateObject({
       model: gateway("google/gemini-3-flash-preview"),
-      experimental_output: Output.object({ schema: PlanSchema }),
+      schema: PlanSchema,
       prompt,
     });
 
-    return experimental_output as SkillPlan;
+    return object;
   });
 
 const YouTubeInput = z.object({
