@@ -422,7 +422,10 @@ function Results({
 
       <RoadmapSection roadmap={plan.roadmap} />
       <VideosSection videos={videos} />
+      <CoursesSection courses={plan.freeCourses} />
       <PracticeSection sites={plan.practiceSites} />
+      <ProjectSection project={plan.project} />
+      <ProblemSection problem={plan.problemOfTheDay} />
       <ProjectSection project={plan.project} />
       <ProblemSection problem={plan.problemOfTheDay} />
     </section>
