@@ -422,7 +422,10 @@ function Results({
 
       <RoadmapSection roadmap={plan.roadmap} />
       <VideosSection videos={videos} />
+      <CoursesSection courses={plan.freeCourses} />
       <PracticeSection sites={plan.practiceSites} />
+      <ProjectSection project={plan.project} />
+      <ProblemSection problem={plan.problemOfTheDay} />
       <ProjectSection project={plan.project} />
       <ProblemSection problem={plan.problemOfTheDay} />
     </section>
@@ -547,10 +550,42 @@ function VideosSection({ videos }: { videos: YouTubeVideo[] }) {
   );
 }
 
+function CoursesSection({ courses }: { courses: SkillPlan["freeCourses"] }) {
+  return (
+    <div className="mb-14 animate-float-up">
+      <SectionHeader
+        index={3}
+        title="Free Structured Courses"
+        hint="Full courses from trusted platforms — free to take."
+      />
+      <div className="grid gap-4 sm:grid-cols-2">
+        {courses.map((c) => (
+          <a
+            key={c.url}
+            href={c.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group rounded-2xl border border-border bg-card-gradient p-5 shadow-card transition hover:border-brand/50"
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent">
+                {c.provider}
+              </span>
+              <span className="text-brand transition group-hover:translate-x-0.5">→</span>
+            </div>
+            <h3 className="font-display text-lg font-semibold leading-snug">{c.title}</h3>
+            <p className="mt-2 text-sm text-foreground/85">{c.description}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function PracticeSection({ sites }: { sites: SkillPlan["practiceSites"] }) {
   return (
     <div className="mb-14 animate-float-up">
-      <SectionHeader index={3} title="Practice Websites" hint="Where to actually do the work." />
+      <SectionHeader index={4} title="Practice Websites" hint="Where to actually do the work." />
       <div className="grid gap-4 sm:grid-cols-2">
         {sites.map((s) => (
           <a
@@ -579,7 +614,7 @@ function PracticeSection({ sites }: { sites: SkillPlan["practiceSites"] }) {
 function ProjectSection({ project }: { project: SkillPlan["project"] }) {
   return (
     <div className="mb-14 animate-float-up">
-      <SectionHeader index={4} title="Recommended Project" hint="Apply what you learned." />
+      <SectionHeader index={5} title="Recommended Project" hint="Apply what you learned." />
       <div className="rounded-2xl border border-border bg-card-gradient p-6 shadow-card sm:p-7">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <h3 className="font-display text-2xl font-semibold">{project.title}</h3>
@@ -617,7 +652,7 @@ function ProjectSection({ project }: { project: SkillPlan["project"] }) {
 function ProblemSection({ problem }: { problem: SkillPlan["problemOfTheDay"] }) {
   return (
     <div className="mb-6 animate-float-up">
-      <SectionHeader index={5} title="Problem of the Day" hint="Reinforce a key concept." />
+      <SectionHeader index={6} title="Problem of the Day" hint="Reinforce a key concept." />
       <div className="rounded-2xl border border-border bg-card-gradient p-6 shadow-card">
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <Badge variant="warm">{problem.difficulty}</Badge>

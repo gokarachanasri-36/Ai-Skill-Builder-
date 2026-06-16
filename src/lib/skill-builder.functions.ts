@@ -39,6 +39,20 @@ const PlanSchema = z.object({
     skillsLearned: z.array(z.string()).min(3),
     expectedOutcome: z.string(),
   }),
+  freeCourses: z
+    .array(
+      z.object({
+        title: z.string(),
+        provider: z.string().describe("e.g. Coursera, edX, freeCodeCamp, Harvard CS50, Udemy free"),
+        url: z.string().url(),
+        description: z.string(),
+      }),
+    )
+    .min(2)
+    .max(3)
+    .describe(
+      "2-3 well-known, completely FREE structured online courses with REAL working URLs. Prefer freeCodeCamp, Harvard CS50/edX free audit, Coursera free audit, Khan Academy, MIT OCW, Google/Microsoft Learn, official docs tutorials.",
+    ),
   problemOfTheDay: z.object({
     statement: z.string(),
     difficulty: z.enum(["Easy", "Medium", "Hard"]),
@@ -63,6 +77,7 @@ The student prefers content in: ${data.language}.
 Requirements:
 - Roadmap must be practical, industry-relevant, and ordered (basics first).
 - For youtubeSearchQueries: produce 3-5 search queries that will surface the SINGLE BEST tutorial videos from trusted educational channels (e.g. for Python think "Corey Schafer Python tutorial", "freeCodeCamp Python full course", "Programming with Mosh Python"). Prefer queries that include the names of trusted instructors/channels in the relevant language when known. For Hindi prefer channels like CodeWithHarry, Apna College. For Telugu include "in Telugu". Avoid generic clickbait queries.
+- freeCourses: 2-3 real, fully-free structured courses with REAL working URLs (freeCodeCamp.org, CS50 on edX, Coursera free audit, Khan Academy, MIT OpenCourseWare, Google/Microsoft Learn, official tutorials). Do NOT invent URLs.
 - Practice websites must be REAL, well-known, free-to-use sites with WORKING urls.
 - Project should be portfolio-worthy and apply the roadmap.
 - Problem of the day should reinforce a core concept.
@@ -132,24 +147,26 @@ export const fetchYouTubeResources = createServerFn({ method: "POST" })
     threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
     const publishedAfter = threeYearsAgo.toISOString();
 
-    // Run all queries in parallel
+    // For each query, run TWO searches: recent (last 3y) and all-time. Merge and rank.
+    const runSearch = async (q: string, onlyRecent: boolean) => {
+      const url = new URL("https://www.googleapis.com/youtube/v3/search");
+      url.searchParams.set("part", "snippet");
+      url.searchParams.set("q", q);
+      url.searchParams.set("type", "video");
+      url.searchParams.set("maxResults", onlyRecent ? "6" : "4");
+      url.searchParams.set("order", "relevance");
+      url.searchParams.set("relevanceLanguage", "en");
+      url.searchParams.set("videoEmbeddable", "true");
+      if (onlyRecent) url.searchParams.set("publishedAfter", publishedAfter);
+      url.searchParams.set("key", key);
+      const res = await fetch(url.toString());
+      if (!res.ok) return [] as YTSearchItem[];
+      const json = (await res.json()) as { items?: YTSearchItem[] };
+      return json.items ?? [];
+    };
+
     const searchResults = await Promise.all(
-      data.queries.map(async (q) => {
-        const url = new URL("https://www.googleapis.com/youtube/v3/search");
-        url.searchParams.set("part", "snippet");
-        url.searchParams.set("q", q);
-        url.searchParams.set("type", "video");
-        url.searchParams.set("maxResults", "8");
-        url.searchParams.set("order", "relevance");
-        url.searchParams.set("relevanceLanguage", "en");
-        url.searchParams.set("videoEmbeddable", "true");
-        url.searchParams.set("publishedAfter", publishedAfter);
-        url.searchParams.set("key", key);
-        const res = await fetch(url.toString());
-        if (!res.ok) return [] as YTSearchItem[];
-        const json = (await res.json()) as { items?: YTSearchItem[] };
-        return json.items ?? [];
-      }),
+      data.queries.flatMap((q) => [runSearch(q, true), runSearch(q, false)]),
     );
 
     // Dedupe by videoId
@@ -190,16 +207,18 @@ export const fetchYouTubeResources = createServerFn({ method: "POST" })
           (now - new Date(c.snippet.publishedAt).getTime()) / (1000 * 60 * 60 * 24);
         // Filter: drop shorts (<3min) and ultra long (>10h)
         if (duration < 180 || duration > 36000) return null;
-        // Score: log views, favor recency, favor longer-form (real tutorials)
+        // Score: log views (strong), recency bonus (favor recent but don't exclude classics),
+        // length bonus (real tutorials), legend bonus (huge view counts win even when old)
         const viewScore = Math.log10(Math.max(views, 1));
-        const recencyScore = Math.max(0, 3 - ageDays / 365); // bonus if <3y
-        const lengthBonus = duration >= 1200 ? 0.5 : 0; // 20min+ likely a real tutorial
+        const recencyScore = Math.max(0, 1.5 - ageDays / (365 * 3)); // up to 1.5 if very recent
+        const lengthBonus = duration >= 1200 ? 0.5 : 0;
+        const legendBonus = views >= 1_000_000 ? 0.75 : 0;
         return {
           item: c,
           stats,
           views,
           duration,
-          score: viewScore + recencyScore + lengthBonus,
+          score: viewScore + recencyScore + lengthBonus + legendBonus,
         };
       })
       .filter((x): x is NonNullable<typeof x> => x !== null)
