@@ -8,54 +8,43 @@ const PlanInput = z.object({
   language: z.enum(["English", "Hindi", "Telugu"]),
 });
 
+// NOTE: keep this schema FLAT and free of string formats / min-max bounds.
+// Gemini structured output compiles the schema into a constrained-decoding
+// state machine and rejects schemas with too many states (.url(), .min(),
+// .max(), enums on free fields, etc). Validate stricter rules in code/prompt.
 const PlanSchema = z.object({
   roadmap: z.object({
-    beginner: z.array(z.string()).min(3),
-    intermediate: z.array(z.string()).min(3),
-    advanced: z.array(z.string()).min(3),
+    beginner: z.array(z.string()),
+    intermediate: z.array(z.string()),
+    advanced: z.array(z.string()),
   }),
-  youtubeSearchQueries: z
-    .array(z.string())
-    .min(3)
-    .max(5)
-    .describe(
-      "3-5 highly specific YouTube search queries that will surface the BEST, most trusted educational tutorials for this skill. Include trusted channel names or course keywords where possible.",
-    ),
-  practiceSites: z
-    .array(
-      z.object({
-        name: z.string(),
-        url: z.string().url(),
-        description: z.string(),
-        whyUseful: z.string(),
-      }),
-    )
-    .min(2)
-    .max(3),
+  youtubeSearchQueries: z.array(z.string()),
+  practiceSites: z.array(
+    z.object({
+      name: z.string(),
+      url: z.string(),
+      description: z.string(),
+      whyUseful: z.string(),
+    }),
+  ),
   project: z.object({
     title: z.string(),
-    difficulty: z.enum(["Beginner", "Intermediate", "Advanced"]),
+    difficulty: z.string(),
     description: z.string(),
-    skillsLearned: z.array(z.string()).min(3),
+    skillsLearned: z.array(z.string()),
     expectedOutcome: z.string(),
   }),
-  freeCourses: z
-    .array(
-      z.object({
-        title: z.string(),
-        provider: z.string().describe("e.g. Coursera, edX, freeCodeCamp, Harvard CS50, Udemy free"),
-        url: z.string().url(),
-        description: z.string(),
-      }),
-    )
-    .min(2)
-    .max(3)
-    .describe(
-      "2-3 well-known, completely FREE structured online courses with REAL working URLs. Prefer freeCodeCamp, Harvard CS50/edX free audit, Coursera free audit, Khan Academy, MIT OCW, Google/Microsoft Learn, official docs tutorials.",
-    ),
+  freeCourses: z.array(
+    z.object({
+      title: z.string(),
+      provider: z.string(),
+      url: z.string(),
+      description: z.string(),
+    }),
+  ),
   problemOfTheDay: z.object({
     statement: z.string(),
-    difficulty: z.enum(["Easy", "Medium", "Hard"]),
+    difficulty: z.string(),
     learningObjective: z.string(),
   }),
 });
