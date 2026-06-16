@@ -39,6 +39,20 @@ const PlanSchema = z.object({
     skillsLearned: z.array(z.string()).min(3),
     expectedOutcome: z.string(),
   }),
+  freeCourses: z
+    .array(
+      z.object({
+        title: z.string(),
+        provider: z.string().describe("e.g. Coursera, edX, freeCodeCamp, Harvard CS50, Udemy free"),
+        url: z.string().url(),
+        description: z.string(),
+      }),
+    )
+    .min(2)
+    .max(3)
+    .describe(
+      "2-3 well-known, completely FREE structured online courses with REAL working URLs. Prefer freeCodeCamp, Harvard CS50/edX free audit, Coursera free audit, Khan Academy, MIT OCW, Google/Microsoft Learn, official docs tutorials.",
+    ),
   problemOfTheDay: z.object({
     statement: z.string(),
     difficulty: z.enum(["Easy", "Medium", "Hard"]),
@@ -63,6 +77,7 @@ The student prefers content in: ${data.language}.
 Requirements:
 - Roadmap must be practical, industry-relevant, and ordered (basics first).
 - For youtubeSearchQueries: produce 3-5 search queries that will surface the SINGLE BEST tutorial videos from trusted educational channels (e.g. for Python think "Corey Schafer Python tutorial", "freeCodeCamp Python full course", "Programming with Mosh Python"). Prefer queries that include the names of trusted instructors/channels in the relevant language when known. For Hindi prefer channels like CodeWithHarry, Apna College. For Telugu include "in Telugu". Avoid generic clickbait queries.
+- freeCourses: 2-3 real, fully-free structured courses with REAL working URLs (freeCodeCamp.org, CS50 on edX, Coursera free audit, Khan Academy, MIT OpenCourseWare, Google/Microsoft Learn, official tutorials). Do NOT invent URLs.
 - Practice websites must be REAL, well-known, free-to-use sites with WORKING urls.
 - Project should be portfolio-worthy and apply the roadmap.
 - Problem of the day should reinforce a core concept.
