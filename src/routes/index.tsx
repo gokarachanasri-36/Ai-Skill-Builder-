@@ -420,14 +420,11 @@ function Results({
         </button>
       </div>
 
-      <RoadmapSection roadmap={plan.roadmap} />
       <VideosSection videos={videos} />
-      <CoursesSection courses={plan.freeCourses} />
-      <PracticeSection sites={plan.practiceSites} />
+      <PracticeSection sites={plan.practiceSites.slice(0, 3)} />
       <ProjectSection project={plan.project} />
       <ProblemSection problem={plan.problemOfTheDay} />
-      <ProjectSection project={plan.project} />
-      <ProblemSection problem={plan.problemOfTheDay} />
+      <RoadmapSummary roadmap={plan.roadmap} />
     </section>
   );
 }
