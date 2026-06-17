@@ -625,7 +625,7 @@ function ProjectSection({ project }: { project: SkillPlan["project"] }) {
 function ProblemSection({ problem }: { problem: SkillPlan["problemOfTheDay"] }) {
   return (
     <div className="mb-6 animate-float-up">
-      <SectionHeader index={6} title="Problem of the Day" hint="Reinforce a key concept." />
+      <SectionHeader index={4} title="Problem of the Day" hint="Reinforce a key concept." />
       <div className="rounded-2xl border border-border bg-card-gradient p-6 shadow-card">
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <Badge variant="warm">{problem.difficulty}</Badge>
