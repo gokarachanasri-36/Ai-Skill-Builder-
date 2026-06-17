@@ -471,7 +471,7 @@ function VideosSection({ videos }: { videos: YouTubeVideo[] }) {
   return (
     <div className="mb-14 animate-float-up">
       <SectionHeader
-        index={2}
+        index={1}
         title="Best Free YouTube Resources"
         hint="Ranked by quality, channel credibility, and freshness."
       />
