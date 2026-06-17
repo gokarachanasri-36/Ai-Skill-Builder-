@@ -252,7 +252,7 @@ export const fetchYouTubeResources = createServerFn({ method: "POST" })
       if (seenChannels.has(ch)) continue;
       seenChannels.add(ch);
       chosen.push(s);
-      if (chosen.length >= 4) break;
+      if (chosen.length >= 3) break;
     }
 
     return chosen.map((s) => ({
