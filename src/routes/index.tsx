@@ -558,7 +558,7 @@ function CoursesSection({ courses }: { courses: SkillPlan["freeCourses"] }) {
 function PracticeSection({ sites }: { sites: SkillPlan["practiceSites"] }) {
   return (
     <div className="mb-14 animate-float-up">
-      <SectionHeader index={4} title="Practice Websites" hint="Where to actually do the work." />
+      <SectionHeader index={2} title="Practice Websites" hint="Where to actually do the work." />
       <div className="grid gap-4 sm:grid-cols-2">
         {sites.map((s) => (
           <a
