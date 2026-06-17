@@ -443,53 +443,29 @@ function SectionHeader({ index, title, hint }: { index: number; title: string; h
   );
 }
 
-function RoadmapSection({ roadmap }: { roadmap: SkillPlan["roadmap"] }) {
-  const groups: { label: string; items: string[]; tint: string }[] = [
-    { label: "Beginner", items: roadmap.beginner, tint: "from-brand/20 to-transparent" },
-    {
-      label: "Intermediate",
-      items: roadmap.intermediate,
-      tint: "from-accent/20 to-transparent",
-    },
-    {
-      label: "Advanced",
-      items: roadmap.advanced,
-      tint: "from-accent-warm/20 to-transparent",
-    },
+function RoadmapSummary({ roadmap }: { roadmap: SkillPlan["roadmap"] }) {
+  const rows: { label: string; items: string[] }[] = [
+    { label: "Beginner", items: roadmap.beginner.slice(0, 4) },
+    { label: "Intermediate", items: roadmap.intermediate.slice(0, 4) },
+    { label: "Advanced", items: roadmap.advanced.slice(0, 4) },
   ];
   return (
-    <div className="mb-14 animate-float-up">
-      <SectionHeader index={1} title="Learning Roadmap" hint="Follow in order. No shortcuts." />
-      <div className="grid gap-4 sm:grid-cols-3">
-        {groups.map((g) => (
-          <div
-            key={g.label}
-            className="relative overflow-hidden rounded-2xl border border-border bg-card-gradient p-5 shadow-card"
-          >
-            <div
-              className={`pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b ${g.tint}`}
-            />
-            <div className="relative">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-brand">
-                {g.label}
-              </p>
-              <ol className="space-y-2.5">
-                {g.items.map((t, i) => (
-                  <li key={i} className="flex gap-2.5 text-sm">
-                    <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md bg-surface text-[10px] font-semibold text-muted-foreground">
-                      {i + 1}
-                    </span>
-                    <span className="text-foreground/90">{t}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
-        ))}
+    <div className="mb-6 animate-float-up">
+      <SectionHeader index={5} title="Roadmap Summary" hint="A quick map. Follow in order." />
+      <div className="rounded-2xl border border-border bg-card-gradient p-5 shadow-card">
+        <ul className="space-y-2.5 text-sm">
+          {rows.map((r) => (
+            <li key={r.label} className="flex flex-wrap gap-x-2">
+              <span className="font-semibold text-brand">{r.label}:</span>
+              <span className="text-foreground/90">{r.items.join(", ")}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
 }
+
 
 function VideosSection({ videos }: { videos: YouTubeVideo[] }) {
   return (
