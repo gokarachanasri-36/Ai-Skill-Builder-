@@ -587,7 +587,7 @@ function PracticeSection({ sites }: { sites: SkillPlan["practiceSites"] }) {
 function ProjectSection({ project }: { project: SkillPlan["project"] }) {
   return (
     <div className="mb-14 animate-float-up">
-      <SectionHeader index={5} title="Recommended Project" hint="Apply what you learned." />
+      <SectionHeader index={3} title="Recommended Project" hint="Apply what you learned." />
       <div className="rounded-2xl border border-border bg-card-gradient p-6 shadow-card sm:p-7">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <h3 className="font-display text-2xl font-semibold">{project.title}</h3>
