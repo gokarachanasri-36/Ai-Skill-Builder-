@@ -76,7 +76,13 @@ export const generateSkillPlan = createServerFn({ method: "POST" })
 
     const prompt = `You are an expert curriculum designer and learning mentor.
 Build a complete free learning plan for the skill: "${data.skill}".
-The student prefers content in: ${data.language}.
+
+LANGUAGE RULE (very important):
+- ALL TEXT in the JSON must be in ENGLISH — roadmap items, practice site names/descriptions, project details, problem text, course titles. EVERYTHING English.
+- The ONLY exception is "youtubeSearchQueries": tailor those to the learner's preferred language: ${data.language}.
+  - English: normal English queries.
+  - Hindi: queries that surface Hindi tutorials (CodeWithHarry, Apna College, etc). You may include the word "Hindi".
+  - Telugu: queries that surface Telugu tutorials. Include the word "Telugu".
 
 Return ONLY a single valid JSON object (no markdown fences, no commentary) with EXACTLY this shape:
 {
@@ -89,12 +95,12 @@ Return ONLY a single valid JSON object (no markdown fences, no commentary) with 
 }
 
 Rules:
-- Roadmap: practical, ordered (basics first), 4-7 items per level.
-- youtubeSearchQueries: 3-5 queries surfacing the BEST tutorials from trusted channels (Corey Schafer, freeCodeCamp, Programming with Mosh, etc). For Hindi prefer CodeWithHarry/Apna College. For Telugu include "in Telugu".
-- freeCourses: 2-3 REAL fully-free courses with WORKING URLs (freeCodeCamp.org, CS50 edX, Coursera free audit, Khan Academy, MIT OCW, Google/Microsoft Learn, official docs). Do NOT invent URLs.
-- practiceSites: 3-5 REAL well-known free sites with working URLs.
-- project: portfolio-worthy, applies the roadmap.
-- problemOfTheDay: reinforces a core concept.
+- Roadmap: short and practical, 3-4 items per level (concise topic names, not sentences).
+- youtubeSearchQueries: 3-5 queries surfacing the BEST tutorials from trusted channels (freeCodeCamp, Corey Schafer, Programming with Mosh, etc).
+- freeCourses: 2-3 REAL fully-free courses with WORKING URLs (freeCodeCamp.org, CS50 edX, Khan Academy, MIT OCW, official docs). Do NOT invent URLs.
+- practiceSites: 2-3 REAL well-known free sites with working URLs.
+- project: ONE portfolio-worthy project.
+- problemOfTheDay: ONE problem reinforcing a core concept.
 
 Output the JSON object only, nothing else.`;
 
