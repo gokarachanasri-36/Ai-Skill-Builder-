@@ -420,14 +420,11 @@ function Results({
         </button>
       </div>
 
-      <RoadmapSection roadmap={plan.roadmap} />
       <VideosSection videos={videos} />
-      <CoursesSection courses={plan.freeCourses} />
-      <PracticeSection sites={plan.practiceSites} />
+      <PracticeSection sites={plan.practiceSites.slice(0, 3)} />
       <ProjectSection project={plan.project} />
       <ProblemSection problem={plan.problemOfTheDay} />
-      <ProjectSection project={plan.project} />
-      <ProblemSection problem={plan.problemOfTheDay} />
+      <RoadmapSummary roadmap={plan.roadmap} />
     </section>
   );
 }
@@ -446,59 +443,35 @@ function SectionHeader({ index, title, hint }: { index: number; title: string; h
   );
 }
 
-function RoadmapSection({ roadmap }: { roadmap: SkillPlan["roadmap"] }) {
-  const groups: { label: string; items: string[]; tint: string }[] = [
-    { label: "Beginner", items: roadmap.beginner, tint: "from-brand/20 to-transparent" },
-    {
-      label: "Intermediate",
-      items: roadmap.intermediate,
-      tint: "from-accent/20 to-transparent",
-    },
-    {
-      label: "Advanced",
-      items: roadmap.advanced,
-      tint: "from-accent-warm/20 to-transparent",
-    },
+function RoadmapSummary({ roadmap }: { roadmap: SkillPlan["roadmap"] }) {
+  const rows: { label: string; items: string[] }[] = [
+    { label: "Beginner", items: roadmap.beginner.slice(0, 4) },
+    { label: "Intermediate", items: roadmap.intermediate.slice(0, 4) },
+    { label: "Advanced", items: roadmap.advanced.slice(0, 4) },
   ];
   return (
-    <div className="mb-14 animate-float-up">
-      <SectionHeader index={1} title="Learning Roadmap" hint="Follow in order. No shortcuts." />
-      <div className="grid gap-4 sm:grid-cols-3">
-        {groups.map((g) => (
-          <div
-            key={g.label}
-            className="relative overflow-hidden rounded-2xl border border-border bg-card-gradient p-5 shadow-card"
-          >
-            <div
-              className={`pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b ${g.tint}`}
-            />
-            <div className="relative">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-brand">
-                {g.label}
-              </p>
-              <ol className="space-y-2.5">
-                {g.items.map((t, i) => (
-                  <li key={i} className="flex gap-2.5 text-sm">
-                    <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md bg-surface text-[10px] font-semibold text-muted-foreground">
-                      {i + 1}
-                    </span>
-                    <span className="text-foreground/90">{t}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
-        ))}
+    <div className="mb-6 animate-float-up">
+      <SectionHeader index={5} title="Roadmap Summary" hint="A quick map. Follow in order." />
+      <div className="rounded-2xl border border-border bg-card-gradient p-5 shadow-card">
+        <ul className="space-y-2.5 text-sm">
+          {rows.map((r) => (
+            <li key={r.label} className="flex flex-wrap gap-x-2">
+              <span className="font-semibold text-brand">{r.label}:</span>
+              <span className="text-foreground/90">{r.items.join(", ")}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
 }
 
+
 function VideosSection({ videos }: { videos: YouTubeVideo[] }) {
   return (
     <div className="mb-14 animate-float-up">
       <SectionHeader
-        index={2}
+        index={1}
         title="Best Free YouTube Resources"
         hint="Ranked by quality, channel credibility, and freshness."
       />
@@ -550,42 +523,11 @@ function VideosSection({ videos }: { videos: YouTubeVideo[] }) {
   );
 }
 
-function CoursesSection({ courses }: { courses: SkillPlan["freeCourses"] }) {
-  return (
-    <div className="mb-14 animate-float-up">
-      <SectionHeader
-        index={3}
-        title="Free Structured Courses"
-        hint="Full courses from trusted platforms — free to take."
-      />
-      <div className="grid gap-4 sm:grid-cols-2">
-        {courses.map((c) => (
-          <a
-            key={c.url}
-            href={c.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group rounded-2xl border border-border bg-card-gradient p-5 shadow-card transition hover:border-brand/50"
-          >
-            <div className="mb-2 flex items-center justify-between">
-              <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent">
-                {c.provider}
-              </span>
-              <span className="text-brand transition group-hover:translate-x-0.5">→</span>
-            </div>
-            <h3 className="font-display text-lg font-semibold leading-snug">{c.title}</h3>
-            <p className="mt-2 text-sm text-foreground/85">{c.description}</p>
-          </a>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 function PracticeSection({ sites }: { sites: SkillPlan["practiceSites"] }) {
   return (
     <div className="mb-14 animate-float-up">
-      <SectionHeader index={4} title="Practice Websites" hint="Where to actually do the work." />
+      <SectionHeader index={2} title="Practice Websites" hint="Where to actually do the work." />
       <div className="grid gap-4 sm:grid-cols-2">
         {sites.map((s) => (
           <a
@@ -614,7 +556,7 @@ function PracticeSection({ sites }: { sites: SkillPlan["practiceSites"] }) {
 function ProjectSection({ project }: { project: SkillPlan["project"] }) {
   return (
     <div className="mb-14 animate-float-up">
-      <SectionHeader index={5} title="Recommended Project" hint="Apply what you learned." />
+      <SectionHeader index={3} title="Recommended Project" hint="Apply what you learned." />
       <div className="rounded-2xl border border-border bg-card-gradient p-6 shadow-card sm:p-7">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <h3 className="font-display text-2xl font-semibold">{project.title}</h3>
@@ -652,7 +594,7 @@ function ProjectSection({ project }: { project: SkillPlan["project"] }) {
 function ProblemSection({ problem }: { problem: SkillPlan["problemOfTheDay"] }) {
   return (
     <div className="mb-6 animate-float-up">
-      <SectionHeader index={6} title="Problem of the Day" hint="Reinforce a key concept." />
+      <SectionHeader index={4} title="Problem of the Day" hint="Reinforce a key concept." />
       <div className="rounded-2xl border border-border bg-card-gradient p-6 shadow-card">
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <Badge variant="warm">{problem.difficulty}</Badge>
