@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { generateObject } from "ai";
+import { generateText } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
 
@@ -8,10 +8,6 @@ const PlanInput = z.object({
   language: z.enum(["English", "Hindi", "Telugu"]),
 });
 
-// NOTE: keep this schema FLAT and free of string formats / min-max bounds.
-// Gemini structured output compiles the schema into a constrained-decoding
-// state machine and rejects schemas with too many states (.url(), .min(),
-// .max(), enums on free fields, etc). Validate stricter rules in code/prompt.
 const PlanSchema = z.object({
   roadmap: z.object({
     beginner: z.array(z.string()),
@@ -51,6 +47,25 @@ const PlanSchema = z.object({
 
 export type SkillPlan = z.infer<typeof PlanSchema>;
 
+// Robust JSON extraction from LLM text output.
+function extractJson(text: string): unknown {
+  let cleaned = text.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
+  const start = cleaned.search(/[\{\[]/);
+  if (start === -1) throw new Error("No JSON found in model output");
+  const endChar = cleaned[start] === "[" ? "]" : "}";
+  const end = cleaned.lastIndexOf(endChar);
+  if (end === -1) throw new Error("No JSON found in model output");
+  cleaned = cleaned.substring(start, end + 1);
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    cleaned = cleaned
+      .replace(/,\s*}/g, "}")
+      .replace(/,\s*]/g, "]");
+    return JSON.parse(cleaned);
+  }
+}
+
 export const generateSkillPlan = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => PlanInput.parse(input))
   .handler(async ({ data }) => {
@@ -63,23 +78,33 @@ export const generateSkillPlan = createServerFn({ method: "POST" })
 Build a complete free learning plan for the skill: "${data.skill}".
 The student prefers content in: ${data.language}.
 
-Requirements:
-- Roadmap must be practical, industry-relevant, and ordered (basics first).
-- For youtubeSearchQueries: produce 3-5 search queries that will surface the SINGLE BEST tutorial videos from trusted educational channels (e.g. for Python think "Corey Schafer Python tutorial", "freeCodeCamp Python full course", "Programming with Mosh Python"). Prefer queries that include the names of trusted instructors/channels in the relevant language when known. For Hindi prefer channels like CodeWithHarry, Apna College. For Telugu include "in Telugu". Avoid generic clickbait queries.
-- freeCourses: 2-3 real, fully-free structured courses with REAL working URLs (freeCodeCamp.org, CS50 on edX, Coursera free audit, Khan Academy, MIT OpenCourseWare, Google/Microsoft Learn, official tutorials). Do NOT invent URLs.
-- Practice websites must be REAL, well-known, free-to-use sites with WORKING urls.
-- Project should be portfolio-worthy and apply the roadmap.
-- Problem of the day should reinforce a core concept.
+Return ONLY a single valid JSON object (no markdown fences, no commentary) with EXACTLY this shape:
+{
+  "roadmap": { "beginner": [string,...], "intermediate": [string,...], "advanced": [string,...] },
+  "youtubeSearchQueries": [string,...],
+  "practiceSites": [{ "name": string, "url": string, "description": string, "whyUseful": string }],
+  "project": { "title": string, "difficulty": string, "description": string, "skillsLearned": [string,...], "expectedOutcome": string },
+  "freeCourses": [{ "title": string, "provider": string, "url": string, "description": string }],
+  "problemOfTheDay": { "statement": string, "difficulty": string, "learningObjective": string }
+}
 
-Return ONLY structured JSON matching the schema.`;
+Rules:
+- Roadmap: practical, ordered (basics first), 4-7 items per level.
+- youtubeSearchQueries: 3-5 queries surfacing the BEST tutorials from trusted channels (Corey Schafer, freeCodeCamp, Programming with Mosh, etc). For Hindi prefer CodeWithHarry/Apna College. For Telugu include "in Telugu".
+- freeCourses: 2-3 REAL fully-free courses with WORKING URLs (freeCodeCamp.org, CS50 edX, Coursera free audit, Khan Academy, MIT OCW, Google/Microsoft Learn, official docs). Do NOT invent URLs.
+- practiceSites: 3-5 REAL well-known free sites with working URLs.
+- project: portfolio-worthy, applies the roadmap.
+- problemOfTheDay: reinforces a core concept.
 
-    const { object } = await generateObject({
-      model: gateway("google/gemini-3-flash-preview"),
-      schema: PlanSchema,
+Output the JSON object only, nothing else.`;
+
+    const { text } = await generateText({
+      model: gateway("google/gemini-2.5-flash"),
       prompt,
     });
 
-    return object;
+    const parsed = extractJson(text);
+    return PlanSchema.parse(parsed);
   });
 
 const YouTubeInput = z.object({
