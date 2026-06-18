@@ -47,6 +47,7 @@ function Index() {
   const [stage, setStage] = useState<Stage>("select");
   const [plan, setPlan] = useState<SkillPlan | null>(null);
   const [videos, setVideos] = useState<YouTubeVideo[]>([]);
+  const [languageNote, setLanguageNote] = useState<string | undefined>(undefined);
   const [errorMsg, setErrorMsg] = useState("");
   const [loadingStep, setLoadingStep] = useState(0);
 
@@ -80,10 +81,11 @@ function Index() {
       const planResult = await generatePlan({ data: { skill: selectedSkill, language } });
       setPlan(planResult);
       const vids = await fetchVideos({
-        data: { queries: planResult.youtubeSearchQueries, skill: selectedSkill },
+        data: { queries: planResult.youtubeSearchQueries, skill: selectedSkill, language },
       });
       clearInterval(stepTimer);
-      setVideos(vids);
+      setVideos(vids.videos);
+      setLanguageNote(vids.languageNote);
       setStage("results");
       setTimeout(() => {
         document.getElementById("results-top")?.scrollIntoView({ behavior: "smooth" });
@@ -103,6 +105,7 @@ function Index() {
     setSkill("");
     setPlan(null);
     setVideos([]);
+    setLanguageNote(undefined);
     setErrorMsg("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -137,6 +140,7 @@ function Index() {
           language={language}
           plan={plan}
           videos={videos}
+          languageNote={languageNote}
           onReset={reset}
         />
       )}
@@ -393,12 +397,14 @@ function Results({
   language,
   plan,
   videos,
+  languageNote,
   onReset,
 }: {
   skill: string;
   language: Language;
   plan: SkillPlan;
   videos: YouTubeVideo[];
+  languageNote?: string;
   onReset: () => void;
 }) {
   return (
@@ -420,7 +426,7 @@ function Results({
         </button>
       </div>
 
-      <VideosSection videos={videos} />
+      <VideosSection videos={videos} languageNote={languageNote} />
       <PracticeSection sites={plan.practiceSites.slice(0, 3)} />
       <ProjectSection project={plan.project} />
       <ProblemSection problem={plan.problemOfTheDay} />
@@ -467,17 +473,22 @@ function RoadmapSummary({ roadmap }: { roadmap: SkillPlan["roadmap"] }) {
 }
 
 
-function VideosSection({ videos }: { videos: YouTubeVideo[] }) {
+function VideosSection({ videos, languageNote }: { videos: YouTubeVideo[]; languageNote?: string }) {
   return (
     <div className="mb-14 animate-float-up">
       <SectionHeader
         index={1}
         title="Best Free YouTube Resources"
-        hint="Ranked by quality, channel credibility, and freshness."
+        hint="Strictly filtered for skill relevance, channel credibility, and freshness."
       />
+      {languageNote && (
+        <div className="mb-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
+          {languageNote}
+        </div>
+      )}
       {videos.length === 0 ? (
         <div className="rounded-2xl border border-border bg-card-gradient p-6 text-sm text-muted-foreground">
-          No videos could be loaded right now. Try again in a moment.
+          {languageNote ?? "No videos could be loaded right now. Try again in a moment."}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
