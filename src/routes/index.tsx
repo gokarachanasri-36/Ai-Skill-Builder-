@@ -473,17 +473,22 @@ function RoadmapSummary({ roadmap }: { roadmap: SkillPlan["roadmap"] }) {
 }
 
 
-function VideosSection({ videos }: { videos: YouTubeVideo[] }) {
+function VideosSection({ videos, languageNote }: { videos: YouTubeVideo[]; languageNote?: string }) {
   return (
     <div className="mb-14 animate-float-up">
       <SectionHeader
         index={1}
         title="Best Free YouTube Resources"
-        hint="Ranked by quality, channel credibility, and freshness."
+        hint="Strictly filtered for skill relevance, channel credibility, and freshness."
       />
+      {languageNote && (
+        <div className="mb-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
+          {languageNote}
+        </div>
+      )}
       {videos.length === 0 ? (
         <div className="rounded-2xl border border-border bg-card-gradient p-6 text-sm text-muted-foreground">
-          No videos could be loaded right now. Try again in a moment.
+          {languageNote ?? "No videos could be loaded right now. Try again in a moment."}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
