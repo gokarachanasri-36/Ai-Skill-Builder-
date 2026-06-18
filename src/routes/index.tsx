@@ -397,12 +397,14 @@ function Results({
   language,
   plan,
   videos,
+  languageNote,
   onReset,
 }: {
   skill: string;
   language: Language;
   plan: SkillPlan;
   videos: YouTubeVideo[];
+  languageNote?: string;
   onReset: () => void;
 }) {
   return (
@@ -424,7 +426,7 @@ function Results({
         </button>
       </div>
 
-      <VideosSection videos={videos} />
+      <VideosSection videos={videos} languageNote={languageNote} />
       <PracticeSection sites={plan.practiceSites.slice(0, 3)} />
       <ProjectSection project={plan.project} />
       <ProblemSection problem={plan.problemOfTheDay} />
