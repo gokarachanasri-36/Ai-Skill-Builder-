@@ -81,10 +81,11 @@ function Index() {
       const planResult = await generatePlan({ data: { skill: selectedSkill, language } });
       setPlan(planResult);
       const vids = await fetchVideos({
-        data: { queries: planResult.youtubeSearchQueries, skill: selectedSkill },
+        data: { queries: planResult.youtubeSearchQueries, skill: selectedSkill, language },
       });
       clearInterval(stepTimer);
-      setVideos(vids);
+      setVideos(vids.videos);
+      setLanguageNote(vids.languageNote);
       setStage("results");
       setTimeout(() => {
         document.getElementById("results-top")?.scrollIntoView({ behavior: "smooth" });
