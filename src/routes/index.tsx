@@ -140,6 +140,7 @@ function Index() {
           language={language}
           plan={plan}
           videos={videos}
+          languageNote={languageNote}
           onReset={reset}
         />
       )}
