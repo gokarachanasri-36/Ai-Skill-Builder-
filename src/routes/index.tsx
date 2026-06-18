@@ -47,6 +47,7 @@ function Index() {
   const [stage, setStage] = useState<Stage>("select");
   const [plan, setPlan] = useState<SkillPlan | null>(null);
   const [videos, setVideos] = useState<YouTubeVideo[]>([]);
+  const [languageNote, setLanguageNote] = useState<string | undefined>(undefined);
   const [errorMsg, setErrorMsg] = useState("");
   const [loadingStep, setLoadingStep] = useState(0);
 
