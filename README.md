@@ -1,55 +1,67 @@
 # 🎯 SkillPath AI
 
-An AI-powered learning companion that gives you a clear, personalized 
-path to learn any skill — in the language you're comfortable in.
+### Learn any skill the right way — curated resources, a clear roadmap, and daily practice, in your language.
 
-## Problem Statement
+🔗 **Live:** https://ai-skill-builder-26.lovable.app/
 
-Most learners waste hours sifting through outdated tutorials and 
-scattered resources, with no clear sense of what to actually practice 
-or build next. Language is also a barrier — most curated learning 
-content assumes English fluency.
+---
 
-SkillPath AI solves this by giving learners a complete, structured 
-path: curated resources, practice links, a roadmap, and daily practice 
-— all in their preferred language.
+## What it is
 
-## Features
+SkillPath AI is a live, AI-powered learning platform. Pick a skill, pick 
+your language, and get everything you actually need to learn it — 
+without the hours of searching, sorting through outdated tutorials, or 
+guessing what to build next.
 
-### Language Selection
-- Choose English, Hindi, or Telugu before starting
-- All recommendations adapt to the selected language
+Built for learners who want a path, not a pile of links.
 
-### AI-Curated Resources
-- Best-pick YouTube channels for the chosen skill (via YouTube API)
-- Direct links to practical, free practice websites
+## The problem
 
-### Learning Roadmap
-- Clear step-by-step path for the skill
-- A real project suggestion to build after learning, to lock in the skill
+Free learning resources exist everywhere — but finding the *right* ones, 
+in a language you're comfortable in, with a clear next step after 
+watching, is the actual bottleneck. Most learners give up not because 
+the content isn't out there, but because there's no structure tying it 
+together.
 
-### Problem of the Day
-- Daily practice problem to build consistency
+## How it works
 
-## System Workflow
-1. User selects preferred language
-2. User enters the skill they want to learn
-3. AI generates best-pick YouTube channel recommendations
-4. YouTube API fetches and verifies real, direct links
-5. AI generates a roadmap + suggested project
-6. Daily "Problem of the Day" is generated for practice
+1. **Choose your language** — English, Hindi, or Telugu
+2. **Enter the skill you want to learn**
+3. **Get AI-curated, best-pick YouTube channels** for that skill
+4. **Get direct links to free practice platforms** to apply what you learn
+5. **Get a roadmap** — a clear sequence, ending in a real project to build
+6. **Practice daily** with a fresh "Problem of the Day"
 
-## Technology Stack
+## Why it's different
 
-**Frontend & Build**
+- **Language-first** — most curated learning content assumes English; 
+  this doesn't
+- **Curated, not crawled** — AI picks the best resources for the skill, 
+  not just top search results
+- **Action-oriented** — every recommendation ends in something to 
+  build or practice, not just watch
+
+## Tech stack
+
+**Frontend**
 - React.js
 - Tailwind CSS
-- Built with Lovable (AI-assisted development)
 
-**APIs & Integration**
-- YouTube Data API (for real, verified channel/video links)
-- AI/LLM API (for roadmap generation, resource curation, daily problems)
+**Backend**
+- Supabase (Postgres, auth, backend infrastructure)
+
+**APIs & AI**
+- YouTube Data API — real, verified channel and video links
+- AI/LLM API — roadmap generation, resource curation, daily problems
+
+**Built with**
+- Lovable (AI-assisted development)
+
+## Status
+
+✅ Live and publicly usable — this is a working product, not a prototype.
 
 ## Author
-Rachanasri
-B.Tech CSE, SR University
+
+**Rachanasri**
+B.Tech CSE, SR University, Warangal
